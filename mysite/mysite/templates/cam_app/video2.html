@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+{% block extra_css %}
+    <style>
+      body{
+        padding-top: 100px;
+      }
+            .videoWrapper {
+              position: relative;
+              width: 100%;
+              padding-bottom: 56.25%; /* aspect ratio: 16:9 */
+              overflow: hidden;
+            }
+            
+            #frame1 {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              border: 2px solid #ccc;
+            }
+            .responsive-iframe-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #ccc;
+  object-fit: cover;
+}
+
+
+.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  z-index: 9999;
+}
+
+
+      </style>
+            
+{% endblock %}
+{% block content %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+<center><h1 class="display-4">{{ page.name_title }}</h1></center>
+<div>
+    <center><p>{{ page.name_subtitle|richtext }}</p></center>
+</div>
+
+<center>
+  <div class="container-fluid" style="height:100%; padding-top:3%; display: block; overflow: auto;">
+    <div class="row" style="padding-bottom:1%;">
+      <div class="col-4">
+        <button type="button" onclick="changeTheVariableStartNorm()" id="pushMe3" class="btn btn-primary" name="button3">Start Normal</button>
+      </div>
+      <div class="col-4">
+        <button type="button" onclick="changeTheVariableStartAI()" id="pushMe5" class="btn btn-primary" name="button5">Start AI</button>
+      </div>
+      <div class="col-4">
+        <button type="button" onclick="changeTheVariableStop()" id="pushMe4" class="btn btn-primary" name="button4" disabled>Stop</button>
+      </div>
+    </div>
+    <h4>If video does not load, click the button below:</h4>
+      <center>
+        <div style="margin-bottom:10px;">
+          <!-- <button type="button" id="ntbtn1" class="btn btn-primary" name="button" style="color:white" disabled>View in new tab</a> -->
+          <button id="fullscreenBtn" type="button" name="button" style="color:white" class="btn btn-primary" disabled>Toggle Fullscreen</button>
+        </div>
+      </center>
+
+        <!-- <div class="videoWrapper">
+          <iframe id="frame1" class="responsive-iframe" src="../no_video/" title="YouTube video player" frameborder="0" scrolling="no"></iframe>          
+        </div> -->
+        <div class="responsive-iframe-wrapper" id="iframe-container">
+          <iframe id="frame1" class="responsive-iframe" src="../no_video/" title="YouTube video player" frameborder="0" scrolling="no" allowfullscreen></iframe>
+        </div>        
+        
+
+</div>
+</center>
+{% endblock %}
+{% block extra_js %}
+    <script type="text/javascript">
+      var url = "../no_video/"
+      // document.getElementById("fullscreenBtn").addEventListener("click", function() {
+      //   window.open(url, "_blank");
+      // });
+      function changeTheVariableStartNorm() {
+         var iframevar1 = document.getElementById('frame1');
+        //  var nt1 = document.getElementById('fullscreenBtn');
+         var a = "../camera_feed/";
+         iframevar1.src = a;
+         url = a;
+         document.getElementById('pushMe5').disabled = true;
+         document.getElementById('pushMe4').disabled = false;
+         document.getElementById('fullscreenBtn').disabled = false;
+      }
+      function changeTheVariableStartAI() {
+         var iframevar1 = document.getElementById('frame1');
+        //  var nt1 = document.getElementById('fullscreenBtn');
+         var a = "../camera_feed_AI/";
+         iframevar1.src = a;
+         url = a;
+         document.getElementById('pushMe3').disabled = true;
+         document.getElementById('pushMe4').disabled = false;
+         document.getElementById('fullscreenBtn').disabled = false;
+      }
+      function changeTheVariableStop() {
+         var iframevar1 = document.getElementById('frame1');
+        //  var nt1 = document.getElementById('fullscreenBtn');
+         var a = "../no_video/";
+         iframevar1.src = a;
+         url = a;
+         document.getElementById('pushMe5').disabled = false;
+         document.getElementById('pushMe3').disabled = false;
+         document.getElementById('pushMe4').disabled = true;
+         document.getElementById('fullscreenBtn').disabled = true;
+      }
+    function resizeIframe() {
+    const container = document.querySelector('.videoWrapper');
+    const iframe = document.getElementById('frame1');
+    const aspectRatio = 16 / 9;
+
+    iframe.style.height = container.clientWidth / aspectRatio + 'px';
+  }
+  document.getElementById('fullscreenBtn').addEventListener('click', function() {
+  toggleFullScreen(document.getElementById('frame1'));
+});
+
+function toggleFullScreen(element) {
+  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+    element.classList.add("fullscreen");
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+    element.classList.remove("fullscreen");
+  }
+}
+document.getElementById("frame1").addEventListener("contextmenu", function (event) {
+    event.preventDefault();
+  });
+
+
+  document.getElementById("iframe-container").addEventListener("contextmenu", function (event) {
+    event.preventDefault();
+  });
+
+
+  window.addEventListener('resize', resizeIframe);
+    </script>
+{% endblock %}
